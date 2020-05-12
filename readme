@@ -1,0 +1,8 @@
+
+主要由于使用的是 localhost 8080 访问 static-extension 下的文件 导致地址错误 ， 导致 3个文件没有拉到
+
+
+所以可以使用  yarn web --host 9.134.12.5 启动服务， 9.134.12.5 为服务器 ip 地址
+
+
+https://zhuanlan.zhihu.com/p/96041706
