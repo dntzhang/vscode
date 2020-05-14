@@ -67,6 +67,9 @@ export class WebWorkerExtensionHostStarter implements IExtensionHostStarter {
 					return;
 				}
 
+				//dntzhang
+				console.log(VSBuffer.wrap(new Uint8Array(data, 0, data.byteLength)).toString())
+
 				emitter.fire(VSBuffer.wrap(new Uint8Array(data, 0, data.byteLength)));
 			};
 
@@ -83,6 +86,9 @@ export class WebWorkerExtensionHostStarter implements IExtensionHostStarter {
 				onMessage: emitter.event,
 				send: vsbuf => {
 					const data = vsbuf.buffer.buffer.slice(vsbuf.buffer.byteOffset, vsbuf.buffer.byteOffset + vsbuf.buffer.byteLength);
+					//dntzhang
+					console.log(data)
+
 					worker.postMessage(data, [data]);
 				}
 			};
