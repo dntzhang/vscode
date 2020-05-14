@@ -57,6 +57,10 @@ import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IViewDescriptorService } from 'vs/workbench/common/views';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 
+//Modify by dntzhang(start)
+import * as fileActions from 'vs/workbench/contrib/files/browser/fileActions';
+window.fileActions = fileActions
+//Modify by dntzhang(end)
 interface IExplorerViewColors extends IColorMapping {
 	listDropBackground?: ColorValue | undefined;
 }
@@ -360,43 +364,43 @@ export class ExplorerView extends ViewPane {
 
 		this.tree = <WorkbenchCompressibleAsyncDataTree<ExplorerItem | ExplorerItem[], ExplorerItem, FuzzyScore>>this.instantiationService.createInstance(WorkbenchCompressibleAsyncDataTree, 'FileExplorer', container, new ExplorerDelegate(), new ExplorerCompressionDelegate(), [this.renderer],
 			this.instantiationService.createInstance(ExplorerDataSource), {
-			compressionEnabled: isCompressionEnabled(),
-			accessibilityProvider: this.renderer,
-			identityProvider: {
-				getId: (stat: ExplorerItem) => {
-					if (stat instanceof NewExplorerItem) {
-						return `new:${stat.resource}`;
-					}
+				compressionEnabled: isCompressionEnabled(),
+				accessibilityProvider: this.renderer,
+				identityProvider: {
+					getId: (stat: ExplorerItem) => {
+						if (stat instanceof NewExplorerItem) {
+							return `new:${stat.resource}`;
+						}
 
-					return stat.resource;
-				}
-			},
-			keyboardNavigationLabelProvider: {
-				getKeyboardNavigationLabel: (stat: ExplorerItem) => {
-					if (this.explorerService.isEditable(stat)) {
-						return undefined;
+						return stat.resource;
 					}
-
-					return stat.name;
 				},
-				getCompressedNodeKeyboardNavigationLabel: (stats: ExplorerItem[]) => {
-					if (stats.some(stat => this.explorerService.isEditable(stat))) {
-						return undefined;
-					}
+				keyboardNavigationLabelProvider: {
+					getKeyboardNavigationLabel: (stat: ExplorerItem) => {
+						if (this.explorerService.isEditable(stat)) {
+							return undefined;
+						}
 
-					return stats.map(stat => stat.name).join('/');
+						return stat.name;
+					},
+					getCompressedNodeKeyboardNavigationLabel: (stats: ExplorerItem[]) => {
+						if (stats.some(stat => this.explorerService.isEditable(stat))) {
+							return undefined;
+						}
+
+						return stats.map(stat => stat.name).join('/');
+					}
+				},
+				multipleSelectionSupport: true,
+				filter: this.filter,
+				sorter: this.instantiationService.createInstance(FileSorter),
+				dnd: this.instantiationService.createInstance(FileDragAndDrop),
+				autoExpandSingleChildren: true,
+				additionalScrollHeight: ExplorerDelegate.ITEM_HEIGHT,
+				overrideStyles: {
+					listBackground: SIDE_BAR_BACKGROUND
 				}
-			},
-			multipleSelectionSupport: true,
-			filter: this.filter,
-			sorter: this.instantiationService.createInstance(FileSorter),
-			dnd: this.instantiationService.createInstance(FileDragAndDrop),
-			autoExpandSingleChildren: true,
-			additionalScrollHeight: ExplorerDelegate.ITEM_HEIGHT,
-			overrideStyles: {
-				listBackground: SIDE_BAR_BACKGROUND
-			}
-		});
+			});
 		this._register(this.tree);
 
 		// Bind configuration
@@ -447,7 +451,7 @@ export class ExplorerView extends ViewPane {
 	// React on events
 
 	private onConfigurationUpdated(configuration: IFilesConfiguration, event?: IConfigurationChangeEvent): void {
-		this.autoReveal = configuration?.explorer?.autoReveal;
+		this.autoReveal = configuration ?.explorer ?.autoReveal;
 
 		// Push down config updates to components of viewer
 		if (event && (event.affectsConfiguration('explorer.decorations.colors') || event.affectsConfiguration('explorer.decorations.badges'))) {
